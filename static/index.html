@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>引用與參考文獻檢查</title>
+<style>
+:root{
+  --bg:#f6f7f9; --card:#fff; --text:#1d2330; --muted:#667085; --line:#e3e6ec;
+  --accent:#2f5fd0; --accent-soft:#e8eefc;
+  --ok:#1a7f4b; --ok-bg:#e3f5ea; --warn:#9a6700; --warn-bg:#fff4d1;
+  --err:#c0362c; --err-bg:#fde7e4; --gray:#5b6472; --gray-bg:#eceef2;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#14171c; --card:#1c2028; --text:#e6e9ef; --muted:#98a2b3; --line:#2c323d;
+    --accent:#7da2ff; --accent-soft:#232c44;
+    --ok:#5fd093; --ok-bg:#173524; --warn:#f0c04a; --warn-bg:#3a2f10;
+    --err:#ff8a7f; --err-bg:#43201c; --gray:#aab2c0; --gray-bg:#2a2f39;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+  font:15px/1.55 "Segoe UI","Microsoft JhengHei","PingFang TC",system-ui,sans-serif}
+main{max-width:1280px;margin:0 auto;padding:28px 20px 60px}
+h1{font-size:22px;margin:0 0 4px}
+.sub{color:var(--muted);margin:0 0 20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px}
+#drop{border:2px dashed var(--line);border-radius:12px;padding:34px 20px;text-align:center;
+  cursor:pointer;transition:.15s;background:var(--card)}
+#drop.over,#drop:hover{border-color:var(--accent);background:var(--accent-soft)}
+#drop strong{font-size:17px}
+#drop small{display:block;color:var(--muted);margin-top:6px}
+.opts{display:flex;flex-wrap:wrap;gap:14px 24px;align-items:center;margin-top:14px;color:var(--muted);font-size:14px}
+.opts label{display:flex;align-items:center;gap:6px;color:var(--text)}
+.opts input[type=email]{padding:5px 8px;border:1px solid var(--line);border-radius:6px;
+  background:var(--card);color:var(--text);width:220px;font:inherit;font-size:13px}
+button{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--text);
+  padding:7px 14px;border-radius:8px;cursor:pointer}
+button:hover{border-color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){button.primary{color:#10131a}}
+button:disabled{opacity:.5;cursor:default}
+#msg{margin-top:14px;padding:12px 14px;border-radius:8px;display:none}
+#msg.err{display:block;background:var(--err-bg);color:var(--err)}
+#msg.info{display:block;background:var(--accent-soft);color:var(--text)}
+#result{display:none;margin-top:22px}
+.head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px}
+.head h2{font-size:17px;margin:0;word-break:break-all}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.stat b{display:block;font-size:24px;line-height:1.2}
+.stat span{color:var(--muted);font-size:13px}
+.stat.bad b{color:var(--err)} .stat.mid b{color:var(--warn)}
+.notes{margin:0 0 14px;padding:10px 14px 10px 30px;background:var(--warn-bg);color:var(--text);border-radius:8px;font-size:14px}
+.bar{height:6px;background:var(--gray-bg);border-radius:3px;overflow:hidden;margin:0 0 14px;display:none}
+.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;align-items:center;border-bottom:1px solid var(--line);margin-bottom:0}
+.tab{border:none;border-bottom:3px solid transparent;border-radius:0;background:none;padding:9px 14px;color:var(--muted)}
+.tab.on{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+.tabs .sp{flex:1}
+.tabs label{font-size:14px;display:flex;gap:6px;align-items:center;padding-right:4px}
+.wrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-top:none;border-radius:0 0 12px 12px}
+table{border-collapse:collapse;width:100%;min-width:900px}
+th,td{padding:9px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+th{font-size:13px;color:var(--muted);font-weight:600;white-space:nowrap;position:sticky;top:0;background:var(--card)}
+tr:last-child td{border-bottom:none}
+td.num{color:var(--muted);white-space:nowrap}
+td.ref{min-width:340px;word-break:break-word}
+td.ctx{color:var(--muted);font-size:13px;min-width:240px}
+.badge{display:inline-block;padding:1px 9px;border-radius:99px;font-size:12.5px;font-weight:600;white-space:nowrap}
+.b-ok{background:var(--ok-bg);color:var(--ok)} .b-warn{background:var(--warn-bg);color:var(--warn)}
+.b-error{background:var(--err-bg);color:var(--err)} .b-gray{background:var(--gray-bg);color:var(--gray)}
+ul.iss{margin:5px 0 0;padding:0;list-style:none;font-size:13.5px}
+ul.iss li{margin:2px 0;padding-left:12px;position:relative}
+ul.iss li::before{content:"";position:absolute;left:0;top:.62em;width:6px;height:6px;border-radius:50%;background:var(--gray)}
+ul.iss li.error::before{background:var(--err)} ul.iss li.warn::before{background:var(--warn)}
+.cr{margin-top:6px;font-size:13px;color:var(--muted);border-left:3px solid var(--line);padding-left:8px}
+a{color:var(--accent)}
+.empty{padding:26px;text-align:center;color:var(--muted)}
+.meta{font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+  <h1>引用與參考文獻檢查</h1>
+  <p class="sub">上傳論文的 PDF 或 DOCX，自動整理出內文引用與參考文獻列表，並檢查兩邊是否對得上、文獻資訊是否正確。</p>
+
+  <div id="drop" tabindex="0">
+    <strong>把檔案拖到這裡，或點一下選擇檔案</strong>
+    <small>支援 .pdf 與 .docx（檔案只在你的電腦上處理）</small>
+    <input id="file" type="file" accept=".pdf,.docx" hidden>
+  </div>
+  <div class="opts">
+    <label><input id="online" type="checkbox" checked> 線上驗證文獻（Crossref）</label>
+    <span>勾選時會把每筆參考文獻的文字送到 Crossref 查詢；論文內文不會上傳。</span>
+    <label>Email（選填）<input id="email" type="email" placeholder="提供給 Crossref 可加快查詢"></label>
+  </div>
+  <div id="msg"></div>
+
+  <section id="result">
+    <div class="head">
+      <h2 id="fname"></h2>
+      <div><button id="reverify">重新線上驗證</button> <button id="export" class="primary">匯出 Excel</button></div>
+    </div>
+    <div class="stats" id="stats"></div>
+    <div class="bar" id="bar"><i></i></div>
+    <ul class="notes" id="notes" hidden></ul>
+    <div class="tabs">
+      <button class="tab on" data-tab="refs">參考文獻列表</button>
+      <button class="tab" data-tab="cites">內文引用</button>
+      <span class="sp"></span>
+      <label><input id="onlybad" type="checkbox"> 只顯示有問題的</label>
+    </div>
+    <div class="wrap"><table id="table"></table></div>
+  </section>
+</main>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let data = null, tab = 'refs', runId = 0;
+
+const drop = $('#drop'), fileInput = $('#file');
+try { $('#email').value = localStorage.getItem('rc_email') || ''; } catch (e) {}
+$('#email').addEventListener('change', e => { try { localStorage.setItem('rc_email', e.target.value.trim()); } catch (x) {} });
+
+drop.addEventListener('click', () => fileInput.click());
+drop.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') fileInput.click(); });
+fileInput.addEventListener('change', () => { if (fileInput.files[0]) upload(fileInput.files[0]); fileInput.value = ''; });
+['dragenter','dragover'].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave','drop'].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.remove('over'); }));
+drop.addEventListener('drop', e => { const f = e.dataTransfer.files[0]; if (f) upload(f); });
+window.addEventListener('dragover', e => e.preventDefault());
+window.addEventListener('drop', e => e.preventDefault());
+
+function msg(text, kind) { const m = $('#msg'); m.className = text ? kind : ''; m.textContent = text || ''; }
+
+async function upload(file) {
+  if (!/\.(pdf|docx)$/i.test(file.name)) { msg('只支援 PDF 與 DOCX 檔案。', 'err'); return; }
+  runId++;
+  msg('分析中：' + file.name + ' …', 'info');
+  $('#result').style.display = 'none';
+  const fd = new FormData(); fd.append('file', file);
+  try {
+    const res = await fetch('/api/analyze', { method: 'POST', body: fd });
+    const json = await res.json();
+    if (!res.ok || json.error) { msg(json.error || '分析失敗。', 'err'); return; }
+    data = json; msg('');
+    $('#result').style.display = 'block';
+    $('#fname').textContent = data.file;
+    render();
+    if ($('#online').checked) verifyAll();
+  } catch (e) { msg('無法連到本機程式，請確認程式視窗還開著。', 'err'); }
+}
+
+async function verifyAll() {
+  if (!data) return;
+  const my = ++runId, refs = data.references, bar = $('#bar');
+  refs.forEach(r => { r.verify = { status: 'pending', issues: [] }; });
+  bar.style.display = 'block'; bar.firstElementChild.style.width = '0'; render();
+  const email = $('#email').value.trim();
+  for (let i = 0; i < refs.length; i += 4) {
+    if (my !== runId) return;
+    const batch = refs.slice(i, i + 4);
+    try {
+      const res = await fetch('/api/verify', { method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ email, refs: batch.map(r => ({ id: r.id, text: r.text, year: r.year,
+          first_author: r.first_author, doi_candidates: r.doi_candidates })) }) });
+      const json = await res.json();
+      if (my !== runId) return;
+      json.results.forEach(v => { const r = refs.find(x => x.id === v.id); if (r) r.verify = v; });
+    } catch (e) {
+      batch.forEach(r => { r.verify = { status: 'unknown', issues: [{ level: 'info', msg: '連線失敗，無法驗證' }] }; });
+    }
+    bar.firstElementChild.style.width = Math.min(100, (i + 4) / refs.length * 100) + '%';
+    render();
+  }
+  setTimeout(() => { if (my === runId) bar.style.display = 'none'; }, 600);
+}
+
+const V_TEXT = { ok: '已查證', warn: '資訊有出入', error: '有問題', notfound: '查無資料', unknown: '無法驗證', pending: '查詢中…' };
+const V_CLS = { ok: 'b-ok', warn: 'b-warn', error: 'b-error', notfound: 'b-gray', unknown: 'b-gray', pending: 'b-gray' };
+const S_TEXT = { ok: '正常', warn: '需留意', error: '有問題' };
+const badge = (cls, text) => `<span class="badge ${cls}">${esc(text)}</span>`;
+const issues = list => (list && list.length)
+  ? '<ul class="iss">' + list.map(i => `<li class="${esc(i.level)}">${esc(i.msg)}</li>`).join('') + '</ul>' : '';
+const refBad = r => r.status !== 'ok' || (r.verify && ['warn', 'error', 'notfound'].includes(r.verify.status));
+
+function render() {
+  const refs = data.references, cites = data.citations;
+  const uncited = refs.filter(r => !r.cited).length;
+  const missing = cites.filter(c => c.status === 'error').length;
+  const vErr = refs.filter(r => r.verify && r.verify.status === 'error').length;
+  const vWarn = refs.filter(r => r.verify && r.verify.status === 'warn').length;
+  const vNone = refs.filter(r => r.verify && r.verify.status === 'notfound').length;
+  const verified = refs.some(r => r.verify);
+  const stat = (n, label, cls) => `<div class="stat ${n ? cls || '' : ''}"><b>${n}</b><span>${label}</span></div>`;
+  $('#stats').innerHTML =
+    stat(refs.length, '筆參考文獻') +
+    stat(cites.length, '種內文引用（' + (data.style === 'numeric' ? '編號制' : '作者–年份制') + '）') +
+    stat(missing, '引用找不到對應文獻', 'bad') +
+    stat(uncited, '文獻未被引用', 'mid') +
+    (verified ? stat(vErr, '線上驗證有問題', 'bad') + stat(vWarn, '線上資訊有出入', 'mid') + stat(vNone, '線上查無資料', 'mid') : '');
+  const notes = $('#notes');
+  notes.hidden = !data.notes.length;
+  notes.innerHTML = data.notes.map(n => `<li>${esc(n)}</li>`).join('');
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.tab === tab));
+
+  const only = $('#onlybad').checked;
+  let html = '';
+  if (tab === 'refs') {
+    const rows = refs.filter(r => !only || refBad(r));
+    html = '<thead><tr><th>#</th><th>參考文獻</th><th>第一作者</th><th>年份</th><th>被引用</th><th>引用比對</th><th>線上驗證</th></tr></thead><tbody>';
+    html += rows.map(r => {
+      const v = r.verify, m = v && v.match;
+      const doi = r.doi ? `<div class="meta">DOI：<a href="https://doi.org/${encodeURI(r.doi)}" target="_blank" rel="noopener">${esc(r.doi)}</a></div>` : '';
+      const cr = m ? `<div class="cr">Crossref：${esc(m.authors)}${m.year ? '（' + esc(m.year) + '）' : ''}${esc(m.title)}${m.journal ? '。<i>' + esc(m.journal) + '</i>' : ''}
+        ${m.doi ? ' <a href="https://doi.org/' + encodeURI(m.doi) + '" target="_blank" rel="noopener">' + esc(m.doi) + '</a>' : ''}</div>` : '';
+      return `<tr><td class="num">${r.number || r.id}</td>
+        <td class="ref">${esc(r.text)}${doi}</td>
+        <td>${esc(r.first_author)}</td><td class="num">${esc((r.year || '—') + (r.suffix || ''))}</td>
+        <td class="num">${r.cited} 次</td>
+        <td>${badge('b-' + r.status, S_TEXT[r.status])}${issues(r.issues)}</td>
+        <td>${v ? badge(V_CLS[v.status] || 'b-gray', V_TEXT[v.status] || v.status) + issues(v.issues) + cr : badge('b-gray', '未驗證')}</td></tr>`;
+    }).join('');
+    if (!rows.length) html += '<tr><td colspan="7" class="empty">沒有符合條件的項目。</td></tr>';
+  } else {
+    const rows = cites.filter(c => !only || c.status !== 'ok');
+    html = '<thead><tr><th>內文引用</th><th>次數</th>' + (data.kind === 'pdf' ? '<th>頁碼</th>' : '') +
+      '<th>對應的參考文獻</th><th>狀態</th><th>上下文</th></tr></thead><tbody>';
+    html += rows.map(c => `<tr><td><b>${esc(c.text)}</b></td><td class="num">${c.count}</td>
+      ${data.kind === 'pdf' ? '<td class="num">' + esc(c.pages.join(', ')) + '</td>' : ''}
+      <td class="ref">${c.matched_label ? esc(c.matched_label) + (c.matched_label.length >= 90 ? '…' : '') : '—'}</td>
+      <td>${badge('b-' + c.status, c.status === 'error' ? '找不到' : S_TEXT[c.status])}${issues(c.issues)}</td>
+      <td class="ctx">${esc(c.context)}</td></tr>`).join('');
+    if (!rows.length) html += '<tr><td colspan="6" class="empty">沒有符合條件的項目。</td></tr>';
+  }
+  $('#table').innerHTML = html + '</tbody>';
+}
+
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => { tab = t.dataset.tab; render(); }));
+$('#onlybad').addEventListener('change', render);
+$('#reverify').addEventListener('click', verifyAll);
+$('#export').addEventListener('click', async () => {
+  const res = await fetch('/api/export', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
+  if (!res.ok) { msg('匯出失敗。', 'err'); return; }
+  const blob = await res.blob(), a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = data.file.replace(/\.[^.]+$/, '') + '_引用檢查.xlsx';
+  a.click(); URL.revokeObjectURL(a.href);
+});
+</script>
+</body>
+</html>
